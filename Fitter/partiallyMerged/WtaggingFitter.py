@@ -123,14 +123,14 @@ class WTaggingFitter(Fitter):  # class WTaggingFitter(Fitter)
 
 		massvar = self.LoadVariable(self.fitvarname)
 
-		fullMC = ROOT.RooDataSet(self.LoadDataset1D("WJets", massvar, "fitRange_HP"), "fullMC")
+		fullMC = ROOT.RooDataSet(self.LoadDataset1D("WJets", massvar, "fitRange_HP"), "fullMC") # TODO: Fix this in case of binned fit 
 		fullMC.append(self.LoadDataset1D("st", massvar, "fitRange_HP"))
 		fullMC.append(self.LoadDataset1D("VV", massvar, "fitRange_HP"))
 		fullMC.append(self.LoadDataset1D("ttfakeW", massvar, "fitRange_HP"))
 		fullMC.append(self.LoadDataset1D("ttrealW", massvar, "fitRange_HP"))
 
 		fullMC.Print()
-
+ 
 
 		modelMC = self.LoadPdf("simultaneousMCmodel")
 
@@ -261,24 +261,26 @@ class WTaggingFitter(Fitter):  # class WTaggingFitter(Fitter)
 
 		# HP plot
 		canvasHP = ROOT.TCanvas("canvasHP", "HP fit on MC", 800, 600)
-		plotHP = variable.frame(ROOT.RooFit.Title("HP"))
-		sample.plotOn(plotHP, ROOT.RooFit.Cut("regions==regions::HP"))
-		model.plotOn(plotHP, ROOT.RooFit.Slice(regions, "HP")) # ROOT.RooFit.ProjWData(regions, sample), 
+		plotHP = variable.frame()
+		sample.plotOn(plotHP, ROOT.RooFit.DataError(ROOT.RooAbsData.Poisson), ROOT.RooFit.Cut("regions==regions::HP")) #Works 
+		model.plotOn(plotHP, ROOT.RooFit.ProjWData(ROOT.RooArgSet(variable), sample), ROOT.RooFit.Components("HP:minimalMC:model")) 
 		plotHP.Draw()
 		canvasHP.Draw()
 
 		# LP plot
 		canvasLP = ROOT.TCanvas("canvasLP", "LP fit on MC", 800, 600)
 		plotLP = variable.frame(ROOT.RooFit.Title("LP"))
-		sample.plotOn(plotLP, ROOT.RooFit.Cut("regions==regions::LP"))
-		
-		model.plotOn(plotLP, ROOT.RooFit.Slice(regions, "LP")) # model.plotOn(plotLP, ROOT.RooFit.Slice(regions, "LP"), ROOT.RooFit.ProjWData(regions, sample))
+		sample.plotOn(plotLP, ROOT.RooFit.DataError(ROOT.RooAbsData.Poisson), ROOT.RooFit.Cut("regions==regions::LP"))
+		model.plotOn(plotLP, ROOT.RooFit.ProjWData(ROOT.RooArgSet(regions), sample), ROOT.RooFit.Components("LP:minimalMC:model")) # model.plotOn(plotLP, ROOT.RooFit.Slice(regions, "LP"), ROOT.RooFit.ProjWData(regions, sample))
 		plotLP.Draw()
 		canvasLP.Draw()
 
 		for savingformat in self.saveasformats: 
 			canvasHP.Print(directory+instancename+"HP"+savingformat)
 			canvasLP.Print(directory+instancename+"LP"+savingformat)
+
+		if (savesnapshot): 
+			self.SaveSnapshotParams(model.getParameters(sample), instancename)
 
 
 	def TestFit(self): 
