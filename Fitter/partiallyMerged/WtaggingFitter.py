@@ -32,6 +32,9 @@ class WTaggingFitter(Fitter):  # class WTaggingFitter(Fitter)
 
 		self.taggername = options.tagger
 
+		possibleyears = [2018, 2020] #2017, 2018, 2020
+		assert(options.year in possibleyears), "ERROR: Please specify a year (with option --year ) within the following: {}".format(possibleyears)
+
 		# Defining the samples
 		self.background = ["tt", "VV", "SingleTop", ] # TODO: define a class "sample" with a chain and cut on it 
 
@@ -162,17 +165,18 @@ class WTaggingFitter(Fitter):  # class WTaggingFitter(Fitter)
 		#self.FixParameterBase("HP:WJets:number", modelMC, fullMC)
 
 
-		fullMC = ROOT.RooDataSet(self.LoadDataset("WJets", ROOT.RooArgSet(massvar, self.LoadVariable(self.taggername))), "fullMC")
-		fullMC.append(self.LoadDataset("st", ROOT.RooArgSet(massvar, self.LoadVariable(self.taggername))))
-		fullMC.append(self.LoadDataset("VV", ROOT.RooArgSet(massvar, self.LoadVariable(self.taggername))))
-		fullMC.append(self.LoadDataset("ttfakeW", ROOT.RooArgSet(massvar, self.LoadVariable(self.taggername))))
-		fullMC.append(self.LoadDataset("ttrealW", ROOT.RooArgSet(massvar, self.LoadVariable(self.taggername))))
-
-		fullMCHP = ROOT.RooDataSet(fullMC)
-		fullMC.Print()
-
 		tagger = self.LoadVariable(self.taggername)
 		tagger.getBinning("fitRange_HP").Print()
+
+		fullMC = ROOT.RooDataSet(self.LoadDataset("WJets", ROOT.RooArgSet(massvar, tagger)), "fullMC")
+		fullMC.append(self.LoadDataset("st", ROOT.RooArgSet(massvar, tagger)))
+		fullMC.append(self.LoadDataset("VV", ROOT.RooArgSet(massvar, tagger)))
+		fullMC.append(self.LoadDataset("ttfakeW", ROOT.RooArgSet(massvar, tagger)))
+		fullMC.append(self.LoadDataset("ttrealW", ROOT.RooArgSet(massvar, tagger)))
+
+		# Make HP and LP datasets by restricting to tagger regions
+		fullMCHP = ROOT.RooDataSet(fullMC)
+		fullMC.Print()
 
 		fullMCHP = fullMCHP.reduce(ROOT.RooFit.CutRange("fitRange_HP"))
 		fullMCHP = fullMCHP.reduce(ROOT.RooArgSet(massvar))
@@ -184,7 +188,7 @@ class WTaggingFitter(Fitter):  # class WTaggingFitter(Fitter)
 		fullMCLP = fullMCLP.reduce(ROOT.RooArgSet(massvar))
 		fullMCLP.Print()
 		
-
+		# Recombine them into a single dataset with two categories
 		fullMCCombined = ROOT.RooDataSet("combinedMC", "combined MC dataset", ROOT.RooArgSet(massvar), ROOT.RooFit.Index(self.workspace.cat("regions")), ROOT.RooFit.Import("HP", fullMCHP), ROOT.RooFit.Import("LP", fullMCLP))
 
 
@@ -263,7 +267,7 @@ class WTaggingFitter(Fitter):  # class WTaggingFitter(Fitter)
 		canvasHP = ROOT.TCanvas("canvasHP", "HP fit on MC", 800, 600)
 		plotHP = variable.frame()
 		sample.plotOn(plotHP, ROOT.RooFit.DataError(ROOT.RooAbsData.Poisson), ROOT.RooFit.Cut("regions==regions::HP")) #Works 
-		model.plotOn(plotHP, ROOT.RooFit.ProjWData(ROOT.RooArgSet(variable), sample), ROOT.RooFit.Components("HP:minimalMC:model")) 
+		model.plotOn(plotHP, ROOT.RooFit.ProjWData(ROOT.RooArgSet(variable), sample), ROOT.RooFit.Slice(regions, "HP")) 
 		plotHP.Draw()
 		canvasHP.Draw()
 
