@@ -112,7 +112,7 @@ def PromptYesNo(answerasbool=False):
 		return rep
 
 def TestGetYield(): # Works
-	tree = GetChain("tt", 2018)
+	tree = GetChain("QCD", 2018)
 	canvas = ROOT.TCanvas("dummycanvas", "dummycanvas", 800, 600)
 	tree.Draw("SelectedJet_tau21", "SelectedJet_pt>300. && SelectedJet_pt<500. && SelectedJet_mass>50. && SelectedJet_mass<130.")
 	integral = GetYield(tree, "SelectedJet_tau21", "SelectedJet_pt>300. && SelectedJet_pt<500. && SelectedJet_mass>50. && SelectedJet_mass<130.", 0., 1.)
@@ -172,15 +172,17 @@ if __name__ == '__main__':
 
 	variable = options.tagger
 	weight = Cut("eventweightlumi") #options.weightvar	
-	basecut = Cut("SelectedJet_pt>300. && SelectedJet_pt<500. && SelectedJet_mass>50. && SelectedJet_mass<130.")
+	basecut = Cut("SelectedJet_pt>300. && SelectedJet_pt<500.")
+	additionaltag = Cut("SelectedJet_mass>56. && SelectedJet_mass<105.")
 	signalcut = Cut("genmatchedAK82017")
 	#cutHP = Cut("SelectedJet_tau21<0.35")
 	#cutLP = Cut("SelectedJet_tau21<0.75 && SelectedJet_tau21>=0.35")
 
 	cut = weight*basecut
-	cutsignal = weight*signalcut
+	cutsignal = weight*basecut*signalcut
 
 	years = [2018] # TODO: remove 
+	#TestGetYield()
 
 	# Computing the fakerate string for naming objects 
 	fakerateHP = options.fakerateHP*100.
@@ -202,10 +204,10 @@ if __name__ == '__main__':
 		signalchain = GetChain("tt", year)
 
 		# Using a previously written C++ script hacked for the purpose (super fast)
-		HP[year] = ROOT.PlotROC(signalchain, backgroundchain, options.tagger, cutsignal, cut, options.fakerateHP, 10000, "HPfakerate{}ROC.root".format(fakeratestringHP), options.verbose)
-		hpcut = HP[year]
-		signalyieldHP = GetYield(signalchain, options.tagger, cutsignal, 0., hpcut)
-		backgroundyieldHP = GetYield(backgroundchain, options.tagger, cut, 0., hpcut)
+		HP[year] = ROOT.PlotROC(signalchain, backgroundchain, options.tagger, additionaltag, cutsignal, cut, options.fakerateHP, 10000, "HPfakerate{}ROC.root".format(fakeratestringHP), options.verbose)
+		hpcut = 0.45 #HP[year]
+		signalyieldHP = GetYield(signalchain, options.tagger, cutsignal*additionaltag, 0., hpcut)
+		backgroundyieldHP = GetYield(backgroundchain, options.tagger, cut*additionaltag, 0., hpcut)
 		signalyieldtotal = GetYield(signalchain, options.tagger, cutsignal, 0., 1.)
 		backgroundyieldtotal = GetYield(backgroundchain, options.tagger, cut, 0., 1.)
 		signalefficiencyHP = signalyieldHP/signalyieldtotal
@@ -216,8 +218,8 @@ if __name__ == '__main__':
 		cutsignal = cutsignal*cutHP
 		cut = cut*cutHP
 		print cutsignal, cut
-		LP[year] = ROOT.PlotROC(signalchain, backgroundchain, options.tagger, cutsignal, cut, options.fakerateLP, 10000, "LPfakerate{}ROC.root".format(fakeratestringLP), options.verbose)
-		lpcut = LP[year]
+		LP[year] = ROOT.PlotROC(signalchain, backgroundchain, options.tagger, additionaltag, cutsignal, cut, options.fakerateLP, 10000, "LPfakerate{}ROC.root".format(fakeratestringLP), options.verbose)
+		lpcut = 0.75 #LP[year]
 		signalyieldLP = GetYield(signalchain, options.tagger, cutsignal, hpcut, lpcut)
 		backgroundyieldLP = GetYield(backgroundchain, options.tagger, cut, hpcut, lpcut)
 		signalyieldtotal = GetYield(signalchain, options.tagger, cutsignal, hpcut, 1.)
