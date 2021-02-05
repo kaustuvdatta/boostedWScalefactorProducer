@@ -14,7 +14,7 @@ lumi = 43.024 #*0.024
 ttbarSF = 1.
 wjetsSF = 1.
 
-CMS_lumi.lumi_13TeV = "%.1f fb^{-1} (2018)" % lumi
+CMS_lumi.lumi_13TeV = "%.1f fb^{-1} (2017)" % lumi
 CMS_lumi.writeExtraText = 1
 CMS_lumi.extraText = "Preliminary"
 CMS_lumi.lumi_sqrtS = "13 TeV"
@@ -34,7 +34,7 @@ cut = "Wlep_type==0" # && SelectedJet_softDrop_mass > 50. && SelectedJet_softDro
 #vars = ["SelectedJet_tau21", "FatJet_pt[0]", "W_pt", "SelectedJet_softDrop_mass","SelectedJet_tau21", "SelectedJet_tau21_ddt", "SelectedJet_tau21_ddt_retune"] 
 #vars += [ "Muon_pt[0]", "Muon_pfRelIso03_all[0]" ]
 #vars += ["Electron_eta[0]", "Electron_phi[0]", "Electron_pt[0]", "Electron_pfRelIso03_all[0]"]
-vars = ["SelectedJet_softDrop_mass","SelectedJet_tau21", "SelectedJet_tau21_ddt", "SelectedJet_tau21_ddt_retune", "FatJet_pt[0]","FatJet_eta[0]","FatJet_phi[0]","FatJet_tau1[0]","FatJet_tau2[0]","FatJet_tau3[0]","FatJet_mass[0]","FatJet_msoftdrop[0]","SelectedLepton_pt","SelectedLepton_iso","nFatJet", "nJet", "nMuon","PV_npvs","MET_pt","fabs(dphi_WJet)","fabs(dphi_MetJet)","fabs(dphi_LepJet)","dr_LepAK8","passingAK4_HT","nSelectedAK4","dphi_LepAK8","dphi_LepMet","dphi_MetAK8","dphi_WAK8","minAK4MetDPhi","Wlep_pt","Wlep_mass","SelectedJet_softDrop_mass","SelectedJet_pt","SelectedJet_eta","SelectedJet_mass","SelectedLepton_eta"]
+vars = ["SelectedJet_softDrop_mass","SelectedJet_tau21", "SelectedJet_tau21_ddt", "SelectedJet_tau21_ddt_retune", "FatJet_pt[0]","FatJet_eta[0]","FatJet_phi[0]","FatJet_tau1[0]","FatJet_tau2[0]","FatJet_tau3[0]","FatJet_mass[0]","FatJet_msoftdrop[0]","SelectedLepton_pt","SelectedLepton_iso","nFatJet", "nJet", "nMuon","PV_npvs","MET_pt","dr_LepAK8","passingAK4_HT","nSelectedAK4","dphi_LepAK8","dphi_LepMet","dphi_MetAK8","dphi_WAK8","minAK4MetDPhi","Wlep_pt","Wlep_mass","SelectedJet_softDrop_mass","SelectedJet_pt","SelectedJet_eta","SelectedJet_mass","SelectedLepton_eta","fabs(dphi_WJet)","fabs(dphi_MetJet)","fabs(dphi_LepJet)"]
 
 
 #Data infile
@@ -452,7 +452,7 @@ def doCP(cutL,postfix=""):
     CMS_lumi.lumiTextSize     = 0.45*factor
     CMS_lumi.lumiTextOffset   = 0.2*factor
     CMS_lumi.cmsTextSize      = 0.75*factor
-    CMS_lumi.lumi_13TeV = "59.7 fb^{-1}"
+    CMS_lumi.lumi_13TeV = "%.1f fb^{-1} (2017)" % lumi#CMS_lumi.lumi_13TeV = "59.7 fb^{-1}"
     #CMS_lumi(canvas, 4, 11)
     CMS_lumi.CMS_lumi(plot, iPeriod, iPos)
     plot.Update()
@@ -488,7 +488,7 @@ def doCP(cutL,postfix=""):
     
     
     print "--- Summary ----"
-    print "Data (2018)", "\t", dataint
+    print "Data (2017 UL)", "\t", dataint
     print "-"*20
     for i,bg in enumerate(bkgs):
       print legs[i], "\t", backint[i]
