@@ -416,7 +416,7 @@ def doCP(cutL,postfix=""):
     datahist.GetYaxis().SetRangeUser(0, datahist.GetMaximum()*1.8);
     datahist.GetYaxis().SetTitle("Events")
     datahist.GetYaxis().SetTitleOffset(1.3)
-    if var in ["FatJet_pt[0]","Muon_pt[0]","W_pt","Muon_pfRelIso03_chg[0]","Muon_pfRelIso03_all[0]"]:
+    if var in ["SelectedJet_pt","SelectedLepton_pt","Wlep_pt","SelectedLepton_iso","Muon_pfRelIso03_all[0]"]:
     	datahist.GetYaxis().SetRangeUser(0.1, datahist.GetMaximum()*1000);
     	canvas.SetLogy()
     #datahist.GetXaxis().SetTitleSize(0.05)
