@@ -28,7 +28,7 @@ parser.add_argument('--debug', dest="debug", action = 'store_true', default = Fa
 parser.add_argument('fakerateHP', default=None, type=float, help="The desired fake-rate for the HP region. ")
 #parser.add_argument('fakerateLP', default=None, type=float, help="The desired fake-rate for the LP region. ")
 parser.add_argument('--workspace', action="store",type=str,dest="workspace",default="workspace", help="Name of workspace")
-parser.add_argument('--sample', action="store",type=str,dest="sample",default="QCD", help='Which tt sample is used')
+parser.add_argument('--sample', action="store",type=str,dest="sample",default="bkg", help='Which tt sample is used')
 parser.add_argument('--tagger', action="store",type=str,dest="tagger",default="SelectedJet_tau21", help="Name of tagger variable (tau32/tau21/ddt)")
 parser.add_argument('--massvar', action="store",type=str,dest="massvar",default="SelectedJet_softDrop_mass", help="Name of mass variable to fit")
 parser.add_argument('--minX', action="store", type=float,dest="minX",default=50. , help="Lower mass cut")
@@ -173,7 +173,7 @@ if __name__ == '__main__':
 		years = [int(options.year)]	
 
 	variable = options.tagger
-	weight = Cut("eventWeight") #options.weightvar 
+	weight = Cut(options.weightvar) #options.weightvar	
 	basecut = Cut("SelectedJet_pt>300. && SelectedJet_pt<500.") #TODO: replace this by the appripriate variable names 
 	additionaltag = Cut("{}>{} && {}<{}".format(options.massvar, options.minX, options.massvar, options.maxX)) #TODO: idem 
 	signalcut = Cut("genmatchedAK8")
