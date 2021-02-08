@@ -135,6 +135,7 @@ LeptonSF = {
             'ISO' : [ "EGM2D_BtoH_GT20GeV_RecoSF_Legacy2016.root", "EGamma_SF2D", False ],
         },
     },
+    #below inputs correponds to 2017 UL, changes still to be added for 2016/2018 UL leptonSF data files
     '2017' : {
         'muon' : {
             'Trigger' : [ "EfficienciesAndSF_RunBtoF_Nov17Nov2017.root", "Mu50_PtEtaBins/pt_abseta_ratio" ],

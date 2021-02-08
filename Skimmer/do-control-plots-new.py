@@ -1,7 +1,7 @@
 import ROOT,sys
-from WTopScalefactorProducer.Fitter.tdrstyle import *
-import  WTopScalefactorProducer.Fitter.CMS_lumi as CMS_lumi
-from WTopScalefactorProducer.Skimmer.getGenEv import getGenEv
+from boostedWScalefactorProducer.Fitter.tdrstyle import *
+import  boostedWScalefactorProducer.Fitter.CMS_lumi as CMS_lumi
+from boostedWScalefactorProducer.Skimmer.getGenEv import getGenEv
 setTDRStyle()
 from time import sleep
 import os
@@ -14,7 +14,7 @@ lumi = 43.024 #*0.024
 ttbarSF = 1.
 wjetsSF = 1.
 
-CMS_lumi.lumi_13TeV = "%.1f fb^{-1} (2018)" % lumi
+CMS_lumi.lumi_13TeV = "%.1f fb^{-1} (2017)" % lumi
 CMS_lumi.writeExtraText = 1
 CMS_lumi.extraText = "Preliminary"
 CMS_lumi.lumi_sqrtS = "13 TeV"
@@ -28,12 +28,7 @@ iPeriod = 4 #iPeriod = 0 for simulation-only plots
 #cut = "(1==1)"
 #cut = "(passedMETfilters&&abs(dr_LepJet)>1.5708&&abs(dphi_MetJet)>1.5708&&Muon_highPtId[0]>=2&&Muon_isPFcand[0]&&Muon_pfIsoId[0]>=6&&W_pt>150.&&maxAK4CSV<0.8484)"
 cut = "Wlep_type==0" # && SelectedJet_softDrop_mass > 50. && SelectedJet_softDrop_mass < 130. && SelectedJet_pt > 200. && SelectedJet_pt < 10000.)"
-#vars = ["SelectedJet_softDrop_mass","SelectedJet_tau21", "SelectedJet_tau21_ddt", "SelectedJet_tau21_ddt_retune", "FatJet_pt[0]","FatJet_eta[0]","FatJet_phi[0]","FatJet_tau1[0]","FatJet_tau2[0]","FatJet_tau3[0]","FatJet_mass[0]","FatJet_msoftdrop[0]","SelectedLepton_pt","SelectedLepton_iso","maxAK4CSV","nFatJet", "nJet", "nMuon","PV_npvs","W_pt","MET_pt","fabs(dphi_WJet)","fabs(dphi_MetJet)","fabs(dphi_LepJet)","dr_LepJet"]
-vars = ["SelectedJet_tau21"] #"SelectedJet_softDrop_mass"
-vars = ["SelectedJet_softDrop_mass","SelectedJet_tau21", "SelectedJet_tau21_ddt", "SelectedJet_tau21_ddt_retune", "FatJet_pt[0]","FatJet_eta[0]","FatJet_phi[0]","FatJet_tau1[0]","FatJet_tau2[0]","FatJet_tau3[0]","FatJet_mass[0]","FatJet_msoftdrop[0]","SelectedLepton_pt","SelectedLepton_iso","nFatJet", "nJet", "nMuon","PV_npvs","MET_pt","fabs(dphi_WJet)","fabs(dphi_MetJet)","fabs(dphi_LepJet)","dr_LepAK8","passingAK4_HT","nSelectedAK4","dphi_LepAK8","dphi_LepMet","dphi_MetAK8","dphi_WAK8","minAK4MetDPhi","Wlep_pt","Wlep_mass","SelectedJet_softDrop_mass","SelectedJet_pt","SelectedJet_eta","SelectedJet_mass","SelectedLepton_eta"]
-#vars = ["SelectedJet_tau21", "FatJet_pt[0]", "W_pt", "SelectedJet_softDrop_mass","SelectedJet_tau21", "SelectedJet_tau21_ddt", "SelectedJet_tau21_ddt_retune"] 
-#vars += [ "Muon_pt[0]", "Muon_pfRelIso03_all[0]" ]
-#vars += ["Electron_eta[0]", "Electron_phi[0]", "Electron_pt[0]", "Electron_pfRelIso03_all[0]"]
+vars = ["SelectedJet_softDrop_mass","SelectedJet_tau21", "SelectedJet_tau21_ddt", "SelectedJet_tau21_ddt_retune", "FatJet_pt[0]","FatJet_eta[0]","FatJet_phi[0]","FatJet_tau1[0]","FatJet_tau2[0]","FatJet_tau3[0]","FatJet_mass[0]","FatJet_msoftdrop[0]","SelectedLepton_pt","SelectedLepton_iso","nFatJet", "nJet", "nMuon","PV_npvs","MET_pt","dr_LepAK8","passingAK4_HT","nSelectedAK4","dphi_LepAK8","dphi_LepMet","dphi_MetAK8","dphi_WAK8","minAK4MetDPhi","Wlep_pt","Wlep_mass","SelectedJet_softDrop_mass","SelectedJet_pt","SelectedJet_eta","SelectedJet_mass","SelectedLepton_eta","fabs(dphi_WJet)","fabs(dphi_MetJet)","fabs(dphi_LepJet)"]
 
 
 #Data infile
@@ -87,7 +82,7 @@ bkgs.append(TTs)
 #TTscompletion = ["oldprod/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8.root", "oldprod/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8.root"]
 bkgs.append(TTs)
 
-dir = "/work/kadatta/private/CMSSW_10_6_12/src/UL17_Wtagging_files_new/" #"/scratch/mhuwiler/data/WTagging/UL17_Wtagging_files_new/" #"/eos/cms/store/group/phys_jetmet/mhuwiler/WSFnanoAODtuples/" #"/work/mhuwiler/data/WScaleFactors/added/"
+dir = "/work/kadatta/private/CMSSW_10_6_12/src/UL17_PUAuto/" #"/scratch/mhuwiler/data/WTagging/UL17_Wtagging_files_new/" #"/eos/cms/store/group/phys_jetmet/mhuwiler/WSFnanoAODtuples/" #"/work/mhuwiler/data/WScaleFactors/added/"
 
 plotdir = "plots/"
 if "maxAK4CSV<" in cut: plotdir = "plots/WCR/"
@@ -415,7 +410,7 @@ def doCP(cutL,postfix=""):
     datahist.GetYaxis().SetRangeUser(0, datahist.GetMaximum()*1.8);
     datahist.GetYaxis().SetTitle("Events")
     datahist.GetYaxis().SetTitleOffset(1.3)
-    if var in ["FatJet_pt[0]","Muon_pt[0]","W_pt","Muon_pfRelIso03_chg[0]","Muon_pfRelIso03_all[0]"]:
+    if var in ["SelectedJet_pt","SelectedLepton_pt","Wlep_pt","SelectedLepton_iso","Muon_pfRelIso03_all[0]"]:
     	datahist.GetYaxis().SetRangeUser(0.1, datahist.GetMaximum()*1000);
     	canvas.SetLogy()
     #datahist.GetXaxis().SetTitleSize(0.05)
@@ -451,7 +446,7 @@ def doCP(cutL,postfix=""):
     CMS_lumi.lumiTextSize     = 0.45*factor
     CMS_lumi.lumiTextOffset   = 0.2*factor
     CMS_lumi.cmsTextSize      = 0.75*factor
-    CMS_lumi.lumi_13TeV = "59.7 fb^{-1}"
+    CMS_lumi.lumi_13TeV = "%.1f fb^{-1} (2017)" % lumi#CMS_lumi.lumi_13TeV = "59.7 fb^{-1}"
     #CMS_lumi(canvas, 4, 11)
     CMS_lumi.CMS_lumi(plot, iPeriod, iPos)
     plot.Update()
@@ -487,7 +482,7 @@ def doCP(cutL,postfix=""):
     
     
     print "--- Summary ----"
-    print "Data (2018)", "\t", dataint
+    print "Data (2017 UL)", "\t", dataint
     print "-"*20
     for i,bg in enumerate(bkgs):
       print legs[i], "\t", backint[i]

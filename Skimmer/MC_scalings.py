@@ -3,8 +3,8 @@
 
 dict_MCscaling_UL17 = {
     'TTJets': ["7.546e+02", 298034800561.50085],  
-    'TTToSemileptonic': ["3.669e+02", 34320777426.760002], #6.871e+02
-    'TTTo2L2Nu': ["6.871e+02 ", 4778168320.4034],
+    'TTToSemileptonic': ["3.654e+02", 34320777426.760002], #6.871e+02
+    'TTTo2L2Nu': ["88.29 ", 4778168320.4034],
     
     'WJetsToLNu': ["5.368e+04", 10460319010853.72],
     'W1JetsToLNu': ["8.897e+03", 1446225166840.4084],
@@ -33,6 +33,7 @@ dict_MCscaling_UL17 = {
     }
 
 '''
+(To be included next)
 dict_MCscaling_UL18 = {
 'TTJets': ["7.546e+02", 298034800561.50085],  
 'TTToSemiLeptonic': ["6.871e+02", 34320777426.760002],
