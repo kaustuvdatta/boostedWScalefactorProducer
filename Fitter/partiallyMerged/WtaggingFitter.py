@@ -239,7 +239,9 @@ class WTaggingFitter(Fitter):  # class WTaggingFitter(Fitter)
 
 		self.DrawFitResult(modelMC, fullMCCombined, massvar, instancename, self.directory["fitMC"])
 
-		
+		if (self.verbose or self.debug): 
+			combinedfitresult.Print()
+
 		modelMC.Print()
 
 		#data = self.workspace.data("HP:data")
@@ -341,6 +343,8 @@ class WTaggingFitter(Fitter):  # class WTaggingFitter(Fitter)
 
 		if (savesnapshot): 
 			self.SaveSnapshotParams(model.getParameters(sample), instancename)
+
+		return fitresult
 
 
 	def DrawFitResult(self, model, sample, variable, instancename="", directory=""): 
