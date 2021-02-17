@@ -239,6 +239,7 @@ class WTaggingFitter(Fitter):  # class WTaggingFitter(Fitter)
 
 		self.DrawFitResult(modelMC, fullMCCombined, massvar, instancename, self.directory["fitMC"])
 
+		
 		modelMC.Print()
 
 		#data = self.workspace.data("HP:data")
@@ -324,13 +325,13 @@ class WTaggingFitter(Fitter):  # class WTaggingFitter(Fitter)
 		sample.plotOn(plotLP, ROOT.RooFit.DataError(ROOT.RooAbsData.Poisson), ROOT.RooFit.Cut("regions==regions::LP"), rt.RooFit.XErrorSize(0))
 		model.plotOn(plotLP, ROOT.RooFit.ProjWData(ROOT.RooArgSet(regions), sample), ROOT.RooFit.Components("LP:fullMC:model")) # model.plotOn(plotLP, ROOT.RooFit.Slice(regions, "LP"), ROOT.RooFit.ProjWData(regions, sample))
 		#model.plotOn(plotLP, ROOT.RooFit.ProjWData(ROOT.RooArgSet(regions), sample), ROOT.RooFit.Components("LP:tt:fake:shape"))
-		model.plotOn(plotLP, ROOT.RooFit.ProjWData(ROOT.RooArgSet(variable), sample), ROOT.RooFit.Components("HP:tt:fake:shape,HP:VV:shape,HP:st:shape,HP:WJets:shape"), ROOT.RooFit.LineStyle(rt.kDashed)) 
+		model.plotOn(plotLP, ROOT.RooFit.ProjWData(ROOT.RooArgSet(variable), sample), ROOT.RooFit.Components("LP:tt:fake:shape,LP:VV:shape,LP:st:shape,LP:WJets:shape"), ROOT.RooFit.LineStyle(rt.kDashed)) 
 		if (self.debug): 
-			model.plotOn(plotLP, ROOT.RooFit.ProjWData(ROOT.RooArgSet(variable), sample), ROOT.RooFit.Components("HP:tt:real:shape"), ROOT.RooFit.LineStyle(rt.kDashed), ROOT.RooFit.LineColor(ROOT.kRed)) 
-			model.plotOn(plotLP, ROOT.RooFit.ProjWData(ROOT.RooArgSet(variable), sample), ROOT.RooFit.Components("HP:tt:fake:shape"), ROOT.RooFit.LineStyle(rt.kDashed), ROOT.RooFit.LineColor(ROOT.kRed+1)) 
-			model.plotOn(plotLP, ROOT.RooFit.ProjWData(ROOT.RooArgSet(variable), sample), ROOT.RooFit.Components("HP:VV:shape"), ROOT.RooFit.LineStyle(rt.kDashed), ROOT.RooFit.LineColor(ROOT.kRed+2)) 
-			model.plotOn(plotLP, ROOT.RooFit.ProjWData(ROOT.RooArgSet(variable), sample), ROOT.RooFit.Components("HP:st:shape"), ROOT.RooFit.LineStyle(rt.kDashed), ROOT.RooFit.LineColor(ROOT.kRed+3)) 
-			model.plotOn(plotLP, ROOT.RooFit.ProjWData(ROOT.RooArgSet(variable), sample), ROOT.RooFit.Components("HP:WJets:shape"), ROOT.RooFit.LineStyle(rt.kDashed), ROOT.RooFit.LineColor(ROOT.kRed+4)) 
+			model.plotOn(plotLP, ROOT.RooFit.ProjWData(ROOT.RooArgSet(variable), sample), ROOT.RooFit.Components("LP:tt:real:shape"), ROOT.RooFit.LineStyle(rt.kDashed), ROOT.RooFit.LineColor(ROOT.kRed)) 
+			model.plotOn(plotLP, ROOT.RooFit.ProjWData(ROOT.RooArgSet(variable), sample), ROOT.RooFit.Components("LP:tt:fake:shape"), ROOT.RooFit.LineStyle(rt.kDashed), ROOT.RooFit.LineColor(ROOT.kRed+1)) 
+			model.plotOn(plotLP, ROOT.RooFit.ProjWData(ROOT.RooArgSet(variable), sample), ROOT.RooFit.Components("LP:VV:shape"), ROOT.RooFit.LineStyle(rt.kDashed), ROOT.RooFit.LineColor(ROOT.kRed+2)) 
+			model.plotOn(plotLP, ROOT.RooFit.ProjWData(ROOT.RooArgSet(variable), sample), ROOT.RooFit.Components("LP:st:shape"), ROOT.RooFit.LineStyle(rt.kDashed), ROOT.RooFit.LineColor(ROOT.kRed+3)) 
+			model.plotOn(plotLP, ROOT.RooFit.ProjWData(ROOT.RooArgSet(variable), sample), ROOT.RooFit.Components("LP:WJets:shape"), ROOT.RooFit.LineStyle(rt.kDashed), ROOT.RooFit.LineColor(ROOT.kRed+4)) 
 		plotLP.Draw()
 		canvasLP.Draw()
 
@@ -377,21 +378,32 @@ class WTaggingFitter(Fitter):  # class WTaggingFitter(Fitter)
 		plotHP.Draw()
 		canvasHP.Draw()
 
+		params = model.getParameters(ROOT.RooArgSet(variable))
+
 		# LP plot
 		canvasLP = ROOT.TCanvas("canvasLP", "LP fit on MC", 800, 600)
 		plotLP = variable.frame(ROOT.RooFit.Title("LP"))
 		sample.plotOn(plotLP, ROOT.RooFit.DataError(ROOT.RooAbsData.Poisson), ROOT.RooFit.Cut("regions==regions::LP"), ROOT.RooFit.XErrorSize(0))
+		model.plotOn(plotHP, ROOT.RooFit.ProjWData(ROOT.RooArgSet(regions), sample), ROOT.RooFit.Cut("regions==regions::LP"), ROOT.RooFit.Components("LP:tt:real:shape,LP:tt:fake:shape,LP:VV:shape,LP:st:shape,LP:WJets:shape"), ROOT.RooFit.DrawOption("F"), ROOT.RooFit.FillColor(414)) 
+		model.plotOn(plotLP, ROOT.RooFit.ProjWData(ROOT.RooArgSet(regions), sample), ROOT.RooFit.Cut("regions==regions::LP"), ROOT.RooFit.Components("LP:tt:fake:shape,LP:VV:shape,LP:st:shape,LP:WJets:shape"), ROOT.RooFit.DrawOption("F"), ROOT.RooFit.FillColor(415)) 
+		model.plotOn(plotLP, ROOT.RooFit.ProjWData(ROOT.RooArgSet(regions), sample), ROOT.RooFit.Cut("regions==regions::LP"), ROOT.RooFit.Components("LP:VV:shape,LP:st:shape,LP:WJets:shape"), ROOT.RooFit.DrawOption("F"), ROOT.RooFit.FillColor(434)) 
+		model.plotOn(plotLP, ROOT.RooFit.ProjWData(ROOT.RooArgSet(regions), sample), ROOT.RooFit.Cut("regions==regions::LP"), ROOT.RooFit.Components("LP:VV:shape,LP:WJets:shape"), ROOT.RooFit.DrawOption("F"), ROOT.RooFit.FillColor(633)) 
+		sample.plotOn(plotLP, ROOT.RooFit.DataError(ROOT.RooAbsData.Poisson), ROOT.RooFit.Cut("regions==regions::LP"), ROOT.RooFit.XErrorSize(0))
 		#model.plotOn(plotLP, ROOT.RooFit.ProjWData(ROOT.RooArgSet(regions), sample), ROOT.RooFit.Components("LP:fullMC:model")) # model.plotOn(plotLP, ROOT.RooFit.Slice(regions, "LP"), ROOT.RooFit.ProjWData(regions, sample))
 		#model.plotOn(plotLP, ROOT.RooFit.ProjWData(ROOT.RooArgSet(regions), sample), ROOT.RooFit.Components("LP:tt:fake:shape"))
-		model.plotOn(plotLP, ROOT.RooFit.ProjWData(ROOT.RooArgSet(variable), sample), ROOT.RooFit.Components("HP:tt:fake:shape,HP:VV:shape,HP:st:shape,HP:WJets:shape"), ROOT.RooFit.LineStyle(ROOT.kDashed)) 
+		model.plotOn(plotLP, ROOT.RooFit.ProjWData(ROOT.RooArgSet(variable), sample), ROOT.RooFit.Components("LP:tt:fake:shape,LP:VV:shape,LP:st:shape,LP:WJets:shape"), ROOT.RooFit.LineStyle(ROOT.kDashed)) 
 		if (self.debug): 
-			model.plotOn(plotLP, ROOT.RooFit.ProjWData(ROOT.RooArgSet(variable), sample), ROOT.RooFit.Components("HP:tt:real:shape"), ROOT.RooFit.LineStyle(rt.kDashed), ROOT.RooFit.LineColor(ROOT.kRed)) 
-			model.plotOn(plotLP, ROOT.RooFit.ProjWData(ROOT.RooArgSet(variable), sample), ROOT.RooFit.Components("HP:tt:fake:shape"), ROOT.RooFit.LineStyle(rt.kDashed), ROOT.RooFit.LineColor(ROOT.kRed+1)) 
-			model.plotOn(plotLP, ROOT.RooFit.ProjWData(ROOT.RooArgSet(variable), sample), ROOT.RooFit.Components("HP:VV:shape"), ROOT.RooFit.LineStyle(rt.kDashed), ROOT.RooFit.LineColor(ROOT.kRed+2)) 
-			model.plotOn(plotLP, ROOT.RooFit.ProjWData(ROOT.RooArgSet(variable), sample), ROOT.RooFit.Components("HP:st:shape"), ROOT.RooFit.LineStyle(rt.kDashed), ROOT.RooFit.LineColor(ROOT.kRed+3)) 
-			model.plotOn(plotLP, ROOT.RooFit.ProjWData(ROOT.RooArgSet(variable), sample), ROOT.RooFit.Components("HP:WJets:shape"), ROOT.RooFit.LineStyle(rt.kDashed), ROOT.RooFit.LineColor(ROOT.kRed+4)) 
+			model.plotOn(plotLP, ROOT.RooFit.ProjWData(ROOT.RooArgSet(variable), sample), ROOT.RooFit.Components("LP:tt:real:shape"), ROOT.RooFit.LineStyle(rt.kDashed), ROOT.RooFit.LineColor(ROOT.kRed)) 
+			model.plotOn(plotLP, ROOT.RooFit.ProjWData(ROOT.RooArgSet(variable), sample), ROOT.RooFit.Components("LP:tt:fake:shape"), ROOT.RooFit.LineStyle(rt.kDashed), ROOT.RooFit.LineColor(ROOT.kRed+1)) 
+			model.plotOn(plotLP, ROOT.RooFit.ProjWData(ROOT.RooArgSet(variable), sample), ROOT.RooFit.Components("LP:VV:shape"), ROOT.RooFit.LineStyle(rt.kDashed), ROOT.RooFit.LineColor(ROOT.kRed+2)) 
+			model.plotOn(plotLP, ROOT.RooFit.ProjWData(ROOT.RooArgSet(variable), sample), ROOT.RooFit.Components("LP:st:shape"), ROOT.RooFit.LineStyle(rt.kDashed), ROOT.RooFit.LineColor(ROOT.kRed+3)) 
+			model.plotOn(plotLP, ROOT.RooFit.ProjWData(ROOT.RooArgSet(variable), sample), ROOT.RooFit.Components("LP:WJets:shape"), ROOT.RooFit.LineStyle(rt.kDashed), ROOT.RooFit.LineColor(ROOT.kRed+4)) 
 		plotLP.Draw()
 		canvasLP.Draw()
+
+		if (self.verbose or self.debug): 
+			params.Print()
+		params.printLatex(ROOT.RooFit.Format("Format", ROOT.RooFit.AutoPrecision(5), ROOT.RooFit.VerbatimName(), ROOT.RooFit.OutputFile(directory+instancename+"modelParams.tex")))
 
 		for savingformat in self.saveasformats: 
 			canvasHP.Print(directory+instancename+"HP"+savingformat)
@@ -696,23 +708,37 @@ class WTaggingFitter(Fitter):  # class WTaggingFitter(Fitter)
 		self.ImportToWorkspace(ttfakeWmodelLP, saveworkspace, ROOT.RooFit.RecycleConflictNodes())
 
 		VVnumberLP = ROOT.RooRealVar("LP:VV:number", "LP:VV:number", 1e5, 500., 1e20)
-		VVmodelLP = ROOT.RooExtendPdf("LP:VV:model", "LP:VV:model", VVshape, VVnumberLP)
+		VVshapeLP = ROOT.RooAddPdf("LP:VV:shape","LP:VV:shape", ROOT.RooArgList(VVExp, VVGauss), ROOT.RooArgList(VVfactor))
+		VVmodelLP = ROOT.RooExtendPdf("LP:VV:model", "LP:VV:model", VVshapeLP, VVnumberLP)
 
 		self.ImportToWorkspace(VVmodelLP, saveworkspace, ROOT.RooFit.RecycleConflictNodes())
 
+		STcoeffLP = ROOT.RooRealVar("LP:st:coefficient", "LP:st:coefficient", -0.04, -1., 1.)
+		STwidthLP = ROOT.RooRealVar("LP:st:width","LP:st:width", 30., 0., 400.)
+		SToffsetLP = ROOT.RooRealVar("LP:st:offset", "LP:st:offset", 60., 50., 100.)
+		#STmeanLP = ROOT.RooRealVar("LP:st:mean", "LP:st:mean", gaus_means, gaus_means*.8, gaus_means*1.2)
+		#STsigmaLP = ROOT.RooRealVar("LP:st:sigma", "LP:st:sigma", gaussigmas, gaussigmas*.5, gaussigmas*1.5)
+		STErfExpLP = ROOT.RooErfExpPdf("LP:st:ErfExp", "LP:st:ErfExp", fitvariable, STcoeffLP, SToffsetLP, STwidthLP)
+		STGaussLP = ROOT.RooGaussian ("LP:st:Gaussian" ,"LP:st:Gaussian" , fitvariable, STmean, STsigma)
+		STfactorLP = ROOT.RooRealVar("LP:st:factor", "LP:st:factor", 0.3, 0.0, 0.99)
+		STshapeLP = ROOT.RooAddPdf("LP:st:shape", "LP:st:shape", STErfExpLP, STGaussLP, STfactor)
 		STnumberLP = ROOT.RooRealVar("LP:st:number", "LP:st:number", 1e5, 500., 1e20)
-		STmodelLP = ROOT.RooExtendPdf("LP:st:model", "LP:st:model", STshape, STnumberLP)
+		STmodelLP = ROOT.RooExtendPdf("LP:st:model", "LP:st:model", STshapeLP, STnumberLP)
 
 		self.ImportToWorkspace(STmodelLP, saveworkspace, ROOT.RooFit.RecycleConflictNodes()) # TODO: Maybe set this the deefault behaviour 
 
+		WJetscoeffLP  = ROOT.RooRealVar("LP:WJets:coefficient", "LP:WJets:coefficient", -0.026, -0.05, 0.01)
+		WJetsoffsetLP = ROOT.RooRealVar("LP:WJets:offset", "LP:WJets:offset" ,80. ,0., 100)
+		WJetswidthLP  = ROOT.RooRealVar("LP:WJets:width", "LP:WJets:width", 30., 1., 100.)
+		WJetsshapeLP  = ROOT.RooErfExpPdf("LP:WJets:shape", "LP:WJets:shape", fitvariable, WJetscoeffLP, WJetsoffsetLP, WJetswidthLP)
 		WJetsnumberLP = ROOT.RooRealVar("LP:WJets:number", "LP:WJets:number", 1e5, 500., 1e20)
-		WJetsmodelLP = ROOT.RooExtendPdf("LP:WJets:model", "LP:WJets:model", WJetsshape, WJetsnumberLP)
+		WJetsmodelLP = ROOT.RooExtendPdf("LP:WJets:model", "LP:WJets:model", WJetsshapeLP, WJetsnumberLP)
 
 		self.ImportToWorkspace(WJetsmodelLP, saveworkspace, ROOT.RooFit.RecycleConflictNodes())
 
 		mcTTnumberLP = ROOT.RooRealVar("LP:MC:number", "LP:MC:number", 1e5, 500., 1e20)
 
-		fullMCmodelLP = ROOT.RooAddPdf("LP:fullMC:model", "LP:fullMC:model", ROOT.RooArgList(ttrealWshape, ttfakeWshapeLP, VVshape, STshape, WJetsshape), ROOT.RooArgList(mcTTnumberLP, ttfakeWnumberLP, VVnumberLP, STnumberLP, WJetsnumberLP)) # TODO: check if want to add models instead of shapes
+		fullMCmodelLP = ROOT.RooAddPdf("LP:fullMC:model", "LP:fullMC:model", ROOT.RooArgList(ttrealWshapeLP, ttfakeWshapeLP, VVshapeLP, STshapeLP, WJetsshapeLP), ROOT.RooArgList(mcTTnumberLP, ttfakeWnumberLP, VVnumberLP, STnumberLP, WJetsnumberLP)) # TODO: check if want to add models instead of shapes
 
 
 
