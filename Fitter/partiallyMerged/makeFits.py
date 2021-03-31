@@ -1038,6 +1038,8 @@ if __name__ == '__main__':
 
     fitter.FitMC()
 
+    #fitter.TestFitControl()
+
     fitter.FitControlRegion()
 
     #fitter.TestFit()
