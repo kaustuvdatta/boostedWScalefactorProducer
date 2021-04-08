@@ -34,7 +34,7 @@ class WTaggingFitter(Fitter):  # class WTaggingFitter(Fitter)
 
 		self.weightname = options.weightvar
 
-		possibleyears = [2018, 2020] #2017, 2018, 2020
+		possibleyears = [2018, 2020, 2017] #2017, 2018, 2020
 		assert(options.year in possibleyears), "ERROR: Please specify a year (with option --year ) within the following: {}".format(possibleyears)
 
 		# Defining the samples
@@ -100,7 +100,7 @@ class WTaggingFitter(Fitter):  # class WTaggingFitter(Fitter)
 		self.FitSampleStr("HP:tt:real:model", "ttrealW" , "fitRange_HP", massvar, "TTsignalHP", True, self.directory["fitMC"]) #self.FitSample({self.LoadPdf("HP:tt:real:model"):self.workspace.data("ttrealW").reduce(ROOT.RooFit.SelectVars(ROOT.RooArgSet(massvar, self.LoadVariable(self.taggername))), ROOT.RooFit.CutRange("fitRange_HP")).reduce(ROOT.RooFit.SelectVars(ROOT.RooArgSet(massvar)))}, "fitRange_HP", massvar, "TTsignal", True, self.directory["fitMC"]) # TODO: give "fitMC" and name as arguments and create everything within FitSample (plot, stream, snapshoot) # TODO: give "fitMC" and name as arguments and create everything within FitSample (plot, stream, snapshoot)
 
 
-		self.FitSampleStr("HP:VV:model", "VV", "fitRange_HP", massvar, "VVbackgroundHP", True, self.directory["fitMC"])
+		#self.FitSampleStr("HP:VV:model", "VV", "fitRange_HP", massvar, "VVbackgroundHP", True, self.directory["fitMC"])
 
 
 		self.FitSampleStr("HP:st:model", "st", "fitRange_HP", massvar, "STbackgroundHP", True, self.directory["fitMC"])
@@ -116,7 +116,7 @@ class WTaggingFitter(Fitter):  # class WTaggingFitter(Fitter)
 		self.FitSampleStr("LP:tt:real:model", "ttrealW" , "fitRange_LP", massvar, "TTsignalLP", True, self.directory["fitMC"]) 
 
 
-		self.FitSampleStr("LP:VV:model", "VV", "fitRange_LP", massvar, "VVbackgroundLP", True, self.directory["fitMC"])
+		#self.FitSampleStr("LP:VV:model", "VV", "fitRange_LP", massvar, "VVbackgroundLP", True, self.directory["fitMC"])
 
 
 		self.FitSampleStr("LP:st:model", "st", "fitRange_LP", massvar, "STbackgroundLP", True, self.directory["fitMC"])
@@ -159,7 +159,7 @@ class WTaggingFitter(Fitter):  # class WTaggingFitter(Fitter)
 
 		fullMC = ROOT.RooDataSet(self.LoadDataset1D("WJets", massvar, "fitRange_HP"), "fullMC") # TODO: Fix this in case of binned fit 
 		fullMC.append(self.LoadDataset1D("st", massvar, "fitRange_HP"))
-		fullMC.append(self.LoadDataset1D("VV", massvar, "fitRange_HP"))
+		#fullMC.append(self.LoadDataset1D("VV", massvar, "fitRange_HP"))
 		fullMC.append(self.LoadDataset1D("ttfakeW", massvar, "fitRange_HP"))
 		fullMC.append(self.LoadDataset1D("ttrealW", massvar, "fitRange_HP"))
 
@@ -173,9 +173,9 @@ class WTaggingFitter(Fitter):  # class WTaggingFitter(Fitter)
 
 		self.FixAllParametersBase(self.LoadPdf("HP:st:model"), fullMC) # TODO: fix to only take massvar 
 
-		self.LoadSnapshot("VVbackgroundHP")
+		#self.LoadSnapshot("VVbackgroundHP")
 
-		self.FixAllParametersBase(self.LoadPdf("HP:VV:model"), fullMC)
+		#self.FixAllParametersBase(self.LoadPdf("HP:VV:model"), fullMC)
 
 		self.LoadSnapshot("WJetsbackgroundHP")
 
@@ -185,9 +185,9 @@ class WTaggingFitter(Fitter):  # class WTaggingFitter(Fitter)
 
 		self.FixAllParametersBase(self.LoadPdf("LP:st:model"), fullMC) # TODO: fix to only take massvar 
 
-		self.LoadSnapshot("VVbackgroundLP")
+		#self.LoadSnapshot("VVbackgroundLP")
 
-		self.FixAllParametersBase(self.LoadPdf("LP:VV:model"), fullMC)
+		#self.FixAllParametersBase(self.LoadPdf("LP:VV:model"), fullMC)
 
 		self.LoadSnapshot("WJetsbackgroundLP")
 
@@ -220,7 +220,7 @@ class WTaggingFitter(Fitter):  # class WTaggingFitter(Fitter)
 
 		fullMC = ROOT.RooDataSet(self.LoadDataset("WJets", ROOT.RooArgSet(massvar, tagger)), "fullMC")
 		fullMC.append(self.LoadDataset("st", ROOT.RooArgSet(massvar, tagger)))
-		fullMC.append(self.LoadDataset("VV", ROOT.RooArgSet(massvar, tagger)))
+		#fullMC.append(self.LoadDataset("VV", ROOT.RooArgSet(massvar, tagger)))
 		fullMC.append(self.LoadDataset("ttfakeW", ROOT.RooArgSet(massvar, tagger)))
 		fullMC.append(self.LoadDataset("ttrealW", ROOT.RooArgSet(massvar, tagger)))
 
@@ -743,7 +743,7 @@ class WTaggingFitter(Fitter):  # class WTaggingFitter(Fitter)
 
 		mcTTnumber = ROOT.RooRealVar("HP:MC:number", "HP:MC:number", 1e10, 500., 1e20)
 
-		fullMCmodelHP = ROOT.RooAddPdf("HP:fullMC:model", "HP:fullMC:model", ROOT.RooArgList(ttrealWshape, ttfakeWshape, VVshape, STshape, WJetsshape), ROOT.RooArgList(ttrealWnumber, ttfakeWnumber, VVnumber, STnumber, WJetsnumber)) # TODO: check if want to add models instead of shapes
+		fullMCmodelHP = ROOT.RooAddPdf("HP:fullMC:model", "HP:fullMC:model", ROOT.RooArgList(ttrealWshape, ttfakeWshape, STshape, WJetsshape), ROOT.RooArgList(ttrealWnumber, ttfakeWnumber, STnumber, WJetsnumber)) # TODO: check if want to add models instead of shapes
 
 		self.ImportToWorkspace(fullMCmodelHP, saveworkspace, ROOT.RooFit.RecycleConflictNodes())
 
@@ -821,7 +821,7 @@ class WTaggingFitter(Fitter):  # class WTaggingFitter(Fitter)
 
 		mcTTnumberLP = ROOT.RooRealVar("LP:MC:number", "LP:MC:number", 1e5, 500., 1e20)
 
-		fullMCmodelLP = ROOT.RooAddPdf("LP:fullMC:model", "LP:fullMC:model", ROOT.RooArgList(ttrealWshapeLP, ttfakeWshapeLP, VVshapeLP, STshapeLP, WJetsshapeLP), ROOT.RooArgList(ttrealWnumberLP, ttfakeWnumberLP, VVnumberLP, STnumberLP, WJetsnumberLP)) # TODO: check if want to add models instead of shapes
+		fullMCmodelLP = ROOT.RooAddPdf("LP:fullMC:model", "LP:fullMC:model", ROOT.RooArgList(ttrealWshapeLP, ttfakeWshapeLP, STshapeLP, WJetsshapeLP), ROOT.RooArgList(ttrealWnumberLP, ttfakeWnumberLP, STnumberLP, WJetsnumberLP)) # TODO: check if want to add models instead of shapes
 
 
 
@@ -884,16 +884,16 @@ class WTaggingFitter(Fitter):  # class WTaggingFitter(Fitter)
 		dataset = Dataset(options.year) 
 
 		# TODO: investigate usage of RooRealVar.setRange() to set HP and LP ranges 
-		for sample in ["VV", "st", "WJets"]: # "tt", 
+		for sample in ["st", "WJets"]: # "tt", "VV"
 			getattr(workspace, "import")(self.CreateDataset(dataset.getSample(sample), sample, argset, cut))
 			workspace.writeToFile(filename)
 			#getattr(workspace, "import")(self.CreateDataset(dataset.getSample(sample), "LP:"+sample, argset, cutFail, weightvarname))
 			#workspace.writeToFile(filename)
 
 		# For tt we need an additional cut to separate it into gen matched merged W and unmerged
-		additionalCutMerged = "(genmatchedAK82017==1)" #"&&(genmatchedAK82017==1)"
-		additionalCutUnmerged = "(genmatchedAK82017==0)" #"&&(genmatchedAK82017==0)"
-		merged = ROOT.RooRealVar("genmatchedAK82017", "genmatchedAK82017", 0., 1.)
+		additionalCutMerged = "(genmatchedAK8==1)" #"&&(genmatchedAK82017==1)" # TODO: set the merged variable in the options 
+		additionalCutUnmerged = "(genmatchedAK8==0)" #"&&(genmatchedAK82017==0)"
+		merged = ROOT.RooRealVar("genmatchedAK8", "genmatchedAK8", 0., 1.)
 		argset.add(merged)
 		getattr(workspace, "import")(self.CreateDataset(dataset.getSample("tt"), "ttrealW", argset, additionalCutMerged))
 		workspace.writeToFile(filename)
