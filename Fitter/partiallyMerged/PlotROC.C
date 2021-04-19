@@ -45,7 +45,7 @@ using std::cout, std::endl;
 
 
 
-double PlotROC( TChain *signal, TChain *background, const TString cutVariable, const TString signalCut = "", const TString backgroundCut = "", const Double_t threshold = 0.9, const Int_t distcretisation = 1000, const TString outname = "ROCsummary.root", bool verbose = false ) 
+double PlotROC( TChain *signal, TChain *background, const TString cutVariable, const TString additionalCut, const TString signalCut = "", const TString backgroundCut = "", const Double_t threshold = 0.9, const Int_t distcretisation = 1000, const TString outname = "ROCsummary.root", bool verbose = false ) 
 {
 
     
@@ -80,6 +80,20 @@ double PlotROC( TChain *signal, TChain *background, const TString cutVariable, c
     
     const Double_t Nsignal = signalaftercut->Integral();
     const Double_t Nbackground = backgroundaftercut->Integral();
+
+    delete signalaftercut; 
+    delete backgroundaftercut; 
+
+    signalaftercut = new TH1D("signalwocut", "signalwocut", distcretisation, rangemin, rangemax);
+    backgroundaftercut = new TH1D("backgroundwocut", "backgroundwocut", distcretisation, rangemin, rangemax); 
+
+    const TString signalCutNew = signalCut+"*("+additionalCut+")"; 
+    const TString backgroundCutNew = backgroundCut+"*("+additionalCut+")"; 
+
+    std::cout << "Signal cut new: " << signalCutNew << ", background: " << backgroundCutNew << std::endl; 
+
+    signal->Draw(cutVariable+">>signalwocut", signalCutNew);
+    background->Draw(cutVariable+">>backgroundwocut", backgroundCutNew);
 
 
     const Double_t minaxis = MVAmin; 
@@ -290,9 +304,9 @@ double PlotROC( TChain *signal, TChain *background, const TString cutVariable, c
     return finalcutvalue; 
 }
 
-double PlotROC( TChain *signal, TChain *background, const TString cutVariable, const TCut signalCut, const TCut backgroundCut, const Double_t threshold = 0.9, const Int_t distcretisation = 1000, const TString outname = "ROCsummary.root", bool verbose = false) 
+double PlotROC( TChain *signal, TChain *background, const TString cutVariable, const TCut additionalCut, const TCut signalCut, const TCut backgroundCut, const Double_t threshold = 0.9, const Int_t distcretisation = 1000, const TString outname = "ROCsummary.root", bool verbose = false) 
 {
-    return PlotROC(signal, background, cutVariable, TString(signalCut.GetTitle()), TString(backgroundCut.GetTitle()), threshold, distcretisation, outname, verbose); 
+    return PlotROC(signal, background, cutVariable, TString(additionalCut.GetTitle()), TString(signalCut.GetTitle()), TString(backgroundCut.GetTitle()), threshold, distcretisation, outname, verbose); 
     //return -1.; 
 }
 

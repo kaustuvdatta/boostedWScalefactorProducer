@@ -24,18 +24,19 @@ parser.add_argument('-b', action='store_true', dest='noX', default=False, help='
 parser.add_argument('-d','--dry', action = 'store_true', help = 'Run in dry mode (just displaying WP but not creating workspaces)')
 parser.add_argument('-v', '--verbose', dest="verbose", action='store_true', default=False, help="Print out more messages.")
 parser.add_argument('-y', '--year', dest="year", default = "all", help="The year for which you want to create the workspace. ")
+parser.add_argument('--debug', dest="debug", action = 'store_true', default = False, help="Do some additional debugging checks.")
 parser.add_argument('fakerateHP', default=None, type=float, help="The desired fake-rate for the HP region. ")
-parser.add_argument('fakerateLP', default=None, type=float, help="The desired fake-rate for the LP region. ")
+#parser.add_argument('fakerateLP', default=None, type=float, help="The desired fake-rate for the LP region. ")
 parser.add_argument('--workspace', action="store",type=str,dest="workspace",default="workspace", help="Name of workspace")
-parser.add_argument('--sample', action="store",type=str,dest="sample",default="QCD", help='Which tt sample is used')
+parser.add_argument('--sample', action="store",type=str,dest="sample",default="bkg", help='Which tt sample is used')
 parser.add_argument('--tagger', action="store",type=str,dest="tagger",default="SelectedJet_tau21", help="Name of tagger variable (tau32/tau21/ddt)")
 parser.add_argument('--massvar', action="store",type=str,dest="massvar",default="SelectedJet_softDrop_mass", help="Name of mass variable to fit")
 parser.add_argument('--minX', action="store", type=float,dest="minX",default=50. , help="Lower mass cut")
 parser.add_argument('--maxX', action="store", type=float,dest="maxX",default=130., help="Upper mass cut")
 parser.add_argument('--weightvar', dest="weightvar", type=str, default="weight", help="The name of the event weight variable in the tree.")
-parser.add_argument('--HP', action="store", type=float,dest="cutHP",default=0.35)
+#parser.add_argument('--HP', action="store", type=float,dest="cutHP",default=0.35)
 parser.add_argument('--LP', action="store", type=float,dest="cutLP",default=0.75)
-parser.add_argument('-p', '--precision', action='store', type=int, dest="precision", default = 10000, help="The number f working points to test. ")
+parser.add_argument('-p', '--precision', action='store', type=int, dest="precision", default = 10000, help="The number of working points to test. ")
 parser.add_argument('--min', action="store", type=float, dest="min",default=0. , help="Lower limit of the range of tagger values considered. ")
 parser.add_argument('--max', action="store", type=float, dest="max",default=1., help="Upper limit of the range of tagger values considered. ")
 #parser.add_argument('--ptmin', action="store", type=float,dest="pTmin",default=200., help="Lower pT cut")
@@ -112,10 +113,10 @@ def PromptYesNo(answerasbool=False):
 		return rep
 
 def TestGetYield(): # Works
-	tree = GetChain("tt", 2018)
+	tree = GetChain("QCD", 2018)
 	canvas = ROOT.TCanvas("dummycanvas", "dummycanvas", 800, 600)
-	tree.Draw("SelectedJet_tau21", "SelectedJet_pt>300. && SelectedJet_pt<500. && SelectedJet_mass>50. && SelectedJet_mass<130.")
-	integral = GetYield(tree, "SelectedJet_tau21", "SelectedJet_pt>300. && SelectedJet_pt<500. && SelectedJet_mass>50. && SelectedJet_mass<130.", 0., 1.)
+	tree.Draw("SelectedJet_tau21", "(SelectedJet_pt>300. && SelectedJet_pt<500. && SelectedJet_softDrop_mass>50. && SelectedJet_softDrop_mass<130.)*"+options.weightvar)
+	integral = GetYield(tree, "SelectedJet_tau21", "SelectedJet_pt>300. && SelectedJet_pt<500. && SelectedJet_softDrop_mass>50. && SelectedJet_softDrop_mass<130.", 0., 1.)
 	PromptYesNo(True)
 
 
@@ -160,7 +161,8 @@ if __name__ == '__main__':
 	
 
 	assert(options.fakerateHP > 0. and options.fakerateHP < 1.), "ERROR: Invalid fake-rate: {}. You must specify a fakerate in ]0,1[. ".format(options.fakerate)	
-	assert(options.fakerateLP > 0. and options.fakerateLP < 1.), "ERROR: Invalid fake-rate: {}. You must specify a fakerate in ]0,1[. ".format(options.fakerate)	
+	#assert(options.fakerateLP > 0. and options.fakerateLP < 1.), "ERROR: Invalid fake-rate: {}. You must specify a fakerate in ]0,1[. ".format(options.fakerate)	
+	#assert(options.cutLP > otpions.min and options.cutLP < options.max) 
 	
 
 	allyears = [2016, 2017, 2018]
@@ -171,26 +173,28 @@ if __name__ == '__main__':
 		years = [int(options.year)]	
 
 	variable = options.tagger
-	weight = Cut("eventweightlumi") #options.weightvar	
-	basecut = Cut("SelectedJet_pt>300. && SelectedJet_pt<500. && SelectedJet_mass>50. && SelectedJet_mass<130.")
-	signalcut = Cut("genmatchedAK82017")
+	weight = Cut(options.weightvar) #options.weightvar	
+	basecut = Cut("SelectedJet_pt>300. && SelectedJet_pt<500.") #TODO: replace this by the appripriate variable names 
+	additionaltag = Cut("{}>{} && {}<{}".format(options.massvar, options.minX, options.massvar, options.maxX)) #TODO: idem 
+	signalcut = Cut("genmatchedAK8")
 	#cutHP = Cut("SelectedJet_tau21<0.35")
 	#cutLP = Cut("SelectedJet_tau21<0.75 && SelectedJet_tau21>=0.35")
 
 	cut = weight*basecut
-	cutsignal = weight*signalcut
+	cutsignal = weight*basecut*signalcut
 
-	years = [2018] # TODO: remove 
+	#years = [2018] # TODO: remove 
+	#TestGetYield()
 
 	# Computing the fakerate string for naming objects 
 	fakerateHP = options.fakerateHP*100.
 	fakeratestringHP = "{:.0f}".format(fakerateHP) if fakerateHP.is_integer() else str(fakerateHP).replace(".", "p")
 
-	fakerateLP = options.fakerateLP*100.
-	fakeratestringLP = "{:.0f}".format(fakerateLP) if fakerateLP.is_integer() else str(fakerateLP).replace(".", "p")
+	#fakerateLP = options.fakerateLP*100.
+	#fakeratestringLP = "{:.0f}".format(fakerateLP) if fakerateLP.is_integer() else str(fakerateLP).replace(".", "p")
 
 	print fakerateHP
-	print fakerateLP
+	#print fakerateLP
 	
 
 	HP = {}
@@ -201,32 +205,37 @@ if __name__ == '__main__':
 		backgroundchain = GetChain(options.sample, year)
 		signalchain = GetChain("tt", year)
 
+		# The LP cut is fixed, whereas the HP cut is iptimised to have similar fakerate among years 
+		LP[year] = options.cutLP #0.75
+
 		# Using a previously written C++ script hacked for the purpose (super fast)
-		HP[year] = ROOT.PlotROC(signalchain, backgroundchain, options.tagger, cutsignal, cut, options.fakerateHP, 10000, "HPfakerate{}ROC.root".format(fakeratestringHP), options.verbose)
-		hpcut = HP[year]
-		signalyieldHP = GetYield(signalchain, options.tagger, cutsignal, 0., hpcut)
-		backgroundyieldHP = GetYield(backgroundchain, options.tagger, cut, 0., hpcut)
-		signalyieldtotal = GetYield(signalchain, options.tagger, cutsignal, 0., 1.)
-		backgroundyieldtotal = GetYield(backgroundchain, options.tagger, cut, 0., 1.)
-		signalefficiencyHP = signalyieldHP/signalyieldtotal
-		backgroundefficiencyHP = backgroundyieldHP/backgroundyieldtotal
+		HP[year] = ROOT.PlotROC(signalchain, backgroundchain, options.tagger, additionaltag, cutsignal, cut, options.fakerateHP, 10000, "HPfakerate{}ROC.root".format(fakeratestringHP), options.verbose)
+		if (options.debug): 
+			hpcut = HP[year] #0.45 #HP[year]
+			# TODO: remove the following lines, they are a cross check 
+			signalyieldHP = GetYield(signalchain, options.tagger, cutsignal*additionaltag, 0., hpcut)
+			backgroundyieldHP = GetYield(backgroundchain, options.tagger, cut*additionaltag, 0., hpcut)
+			signalyieldtotal = GetYield(signalchain, options.tagger, cutsignal, 0., 1.)
+			backgroundyieldtotal = GetYield(backgroundchain, options.tagger, cut, 0., 1.)
+			signalefficiencyHP = signalyieldHP/signalyieldtotal
+			backgroundefficiencyHP = backgroundyieldHP/backgroundyieldtotal
 
 		# Now we need to remove the HP categroy (additional cut) and compute the ROC curve for the LP sample
-		cutHP = Cut("{}>{}".format(options.tagger, HP[year]))
-		cutsignal = cutsignal*cutHP
-		cut = cut*cutHP
-		print cutsignal, cut
-		LP[year] = ROOT.PlotROC(signalchain, backgroundchain, options.tagger, cutsignal, cut, options.fakerateLP, 10000, "LPfakerate{}ROC.root".format(fakeratestringLP), options.verbose)
-		lpcut = LP[year]
-		signalyieldLP = GetYield(signalchain, options.tagger, cutsignal, hpcut, lpcut)
-		backgroundyieldLP = GetYield(backgroundchain, options.tagger, cut, hpcut, lpcut)
-		signalyieldtotal = GetYield(signalchain, options.tagger, cutsignal, hpcut, 1.)
-		backgroundyieldtotal = GetYield(backgroundchain, options.tagger, cut, hpcut, 1.)
-		signalefficiencyLP = signalyieldLP/signalyieldtotal
-		backgroundefficiencyLP = backgroundyieldLP/backgroundyieldtotal
+		#cutHP = Cut("{}>{}".format(options.tagger, HP[year]))
+		#cutsignal = cutsignal*cutHP
+		#cut = cut*cutHP
+		#print cutsignal, cut
+		#LP[year] = ROOT.PlotROC(signalchain, backgroundchain, options.tagger, additionaltag, cutsignal, cut, options.fakerateLP, 10000, "LPfakerate{}ROC.root".format(fakeratestringLP), options.verbose)
+			lpcut = LP[year] #0.75 #LP[year]
+			signalyieldLP = GetYield(signalchain, options.tagger, cutsignal, hpcut, lpcut)
+			backgroundyieldLP = GetYield(backgroundchain, options.tagger, cut, hpcut, lpcut)
+			signalyieldtotal = GetYield(signalchain, options.tagger, cutsignal, hpcut, 1.)
+			backgroundyieldtotal = GetYield(backgroundchain, options.tagger, cut, hpcut, 1.)
+			signalefficiencyLP = signalyieldLP/signalyieldtotal
+			backgroundefficiencyLP = backgroundyieldLP/backgroundyieldtotal	
 
-		print "year: {}, HP fakerate: {}, HP cut value: {}, HP signal yield: {}, HP background yield: {}, HP signal efficiency: {}, HP background efficiency: {}".format(year, options.fakerateHP, HP[year], signalyieldHP, backgroundyieldHP, signalefficiencyHP, backgroundefficiencyHP)
-		print "year: {}, LP fakerate: {}, LP cut value: {}, LP signal yield: {}, LP background yield: {}, LP signal efficiency: {}, LP background efficiency: {}".format(year, options.fakerateLP, LP[year], signalyieldLP, backgroundyieldLP, signalefficiencyLP, backgroundefficiencyLP)
+			print "year: {}, HP fakerate: {}, HP cut value: {}, HP signal yield: {}, HP background yield: {}, HP signal efficiency: {}, HP background efficiency: {}".format(year, options.fakerateHP, HP[year], signalyieldHP, backgroundyieldHP, signalefficiencyHP, backgroundefficiencyHP)
+			print "year: {}, LP fakerate: {}, LP cut value: {}, LP signal yield: {}, LP background yield: {}, LP signal efficiency: {}, LP background efficiency: {}".format(year, backgroundefficiencyLP, LP[year], signalyieldLP, backgroundyieldLP, signalefficiencyLP, backgroundefficiencyLP)
 
 
 		#print HP[year]
@@ -240,6 +249,8 @@ if __name__ == '__main__':
 			signalchain.Draw(options.tagger+">>"+histosignal.GetName(), cutsignal*Cut(options.tagger+">{}".format(WP)))
 			file.Write()
 			file.Close()
+
+		#TestGetYield() 
 
 	print "Working points: HP: {}, LP: {}.".format(HP, LP)
 

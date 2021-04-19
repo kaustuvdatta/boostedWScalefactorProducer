@@ -228,7 +228,7 @@ class Fitter:
 			dataset = dataset.binnedClone()
 		return dataset
 
-	def CreateDataset(self, files, name, variables, cut, weightvariable): 
+	def CreateDataset(self, files, name, variables, cut, weightvariable = None): 
 		print "Creating dataset {}".format(name)   
 
 		chain = ROOT.TChain("Events")
@@ -239,7 +239,10 @@ class Fitter:
 		if (self.verbose): print "Tree with {} entries.".format(chain.GetEntries())
 
 		if (self.verbose): print "Importing dataset '{}' with cut '{}' from: {}".format(name, cut, ", ".join(files))
-		dataset = ROOT.RooDataSet(name, name, chain, variables, cut, weightvariable)
+		if (weightvariable == None): 
+			dataset = ROOT.RooDataSet(name, name, chain, variables, cut)
+		else: 
+			dataset = ROOT.RooDataSet(name, name, chain, variables, cut, weightvariable)
 
 		return dataset
 
