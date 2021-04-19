@@ -34,7 +34,7 @@ class Skimmer(Module):
  
      	self.minLepWPt = 150. #to select boosted topologies in semi-leptonic ttbar
         self.minSDMassW = 60.   
-        self.maxSDMassW = 115.
+        self.maxSDMassW = 120.
 
         ### Kinematics Cuts AK4Jets ###
         self.minAK4JetPt = 25.
@@ -280,7 +280,7 @@ class Skimmer(Module):
         if WcandLep.Pt() < self.minLepWPt: return False   
 	
         #Minimal selection on AK4 jets, requiring at least 2 jets satisfying the minimal criteria in the event
-        recoAK4 = [ x for x in Jets if x.pt > self.minAK4JetPt and abs(x.p4().Eta()) < self.maxAK4JetEta and (x.jetId & 2)]
+        recoAK4 = [ x for x in Jets if x.pt > self.minAK4JetPt and abs(x.p4().Eta()) < self.maxAK4JetEta and (x.jetId>=2)]
         if not len(recoAK4) > 1: return False 
         
 	# Commenting out requirement of scalar sum of pT of all minimally selected AK4 jets in the event(i.e., H_T) to be greater than 250 GeV, but keeping the value for later cuts/control plots if necessary 
@@ -290,11 +290,11 @@ class Skimmer(Module):
 	minAK4MetDPhi = min([ abs(x.p4().DeltaPhi(MET)) for x in recoAK4]) if len(recoAK4) >= 1 else -1.
 
         #To progress further, keeping the non-btagged AK4 jet(s) is not necessary; so we drop them effectively requiring that there is at least one b-tagged AK4 jet, and also requiring an angular separation of the prompt lepton and b-tagged jet 
-	recoAK4 = [ x for x in recoAK4 if x.btagDeepFlavB > self.minBDisc and abs(x.p4().DeltaPhi(lepton.p4())<2.)]
+	recoAK4 = [ x for x in recoAK4 if x.btagDeepFlavB > self.minBDisc and abs(x.p4().DeltaPhi(lepton.p4()))<2.]
 	if not len(recoAK4) > 0: return False
 
         #Selection for AK8 jet
-        recoAK8 = [ x for x in FatJets if x.pt > self.minAK8JetPt and  abs(x.eta) < self.maxAK8JetEta and x.tau1 > 0. and x.tau2 > 0. and (x.jetId & 2) and x.p4().DeltaPhi(lepton.p4())>2.] #and x.msoftdrop > self.minSDMassW and x.msoftdrop<self.maxSDMassW 
+        recoAK8 = [ x for x in FatJets if x.pt > self.minAK8JetPt and  abs(x.eta) < self.maxAK8JetEta and x.tau1 > 0. and x.tau2 > 0. and (x.jetId>=2) and abs(x.p4().DeltaPhi(lepton.p4()))>2. and x.msoftdrop > self.minSDMassW and x.msoftdrop<self.maxSDMassW] # 
         if not len(recoAK8) > 0: return False
         recoAK8.sort(key=lambda x:x.pt,reverse=True)
 
@@ -395,7 +395,8 @@ class Skimmer(Module):
                 	if dR < 0.6: # changed from 0.8 for tighter matching criterion (as per CMS-JME-18-002)
                   	    nDau +=1                 
                   	    self.isW = 1
-        
+        print (recoAK8[0].pt, recoAK8[0].msoftdrop, recoAK4[0].pt, event.event, event.luminosityBlock)
+                    
         #Fill output branches
 	self.out.fillBranch("passingAK4_HT",  recoAK4_HT)
         self.out.fillBranch("genmatchedAK8",  self.isW)

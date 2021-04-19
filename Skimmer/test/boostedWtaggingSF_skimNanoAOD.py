@@ -175,7 +175,7 @@ if isMC:
 	modulesToRun.append( btagSF2018() )
     if args.year=='2017':
 	modulesToRun.append( puAutoWeight_2017() )
-	print "Running with btag SF calc."	
+	print "Not running with btag SF calc."	
 	modulesToRun.append( btagSF2017() )
     if args.year=='2016':
 	modulesToRun.append( puWeight_2016() )
