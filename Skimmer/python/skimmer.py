@@ -98,6 +98,8 @@ class Skimmer(Module):
         self.out.branch("SelectedJet_deepTagMD_WvsQCD",  "F")
         self.out.branch("SelectedJet_particleNet_WvsQCD","F")
         self.out.branch("SelectedJet_particleNetMD_Xqq", "F")
+        self.out.branch("SelectedJet_particleNetMD_Xcc", "F")
+        self.out.branch("SelectedJet_particleNetMD_QCD", "F")
         self.out.branch("SelectedJet_pt",   "F")
         self.out.branch("SelectedJet_eta",  "F")
         self.out.branch("SelectedJet_mass", "F")
@@ -451,7 +453,9 @@ class Skimmer(Module):
         self.out.fillBranch("SelectedJet_deepTagMD_WvsQCD",recoAK8[0].deepTagMD_WvsQCD)
         self.out.fillBranch("SelectedJet_particleNet_WvsQCD",recoAK8[0].particleNet_WvsQCD)
         self.out.fillBranch("SelectedJet_particleNetMD_Xqq",recoAK8[0].particleNetMD_Xqq)
-       
+        self.out.fillBranch("SelectedJet_particleNetMD_Xcc",recoAK8[0].particleNetMD_Xcc)
+        self.out.fillBranch("SelectedJet_particleNetMD_QCD",recoAK8[0].particleNetMD_QCD)
+
 	self.nEventsPassed+=1
 
 	return True
